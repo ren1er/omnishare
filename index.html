@@ -3,816 +3,841 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniShare</title>
+    <title>OmniShare - File Sharing Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #eef2ff;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #e63946;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border: #dee2e6;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+            position: relative;
         }
-
-        .header {
-            background: white;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
-
-        .logo::before {
-            content: "☁️";
-            font-size: 1.5rem;
-        }
-
-        .login-btn {
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-
-        .login-btn:hover {
-            background: #5048e5;
-        }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
         }
-
-        .tabs {
+        
+        header {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #e9ecef;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
         }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            color: #6b7280;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
         }
-
-        .tab.active {
-            color: #6366f1;
-            border-bottom-color: #6366f1;
+        
+        .logo i {
+            font-size: 28px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+            background: white;
+            padding: 8px;
+            border-radius: 50px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--gray);
             font-weight: 500;
+            padding: 12px 25px;
+            border-radius: 30px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
-        .tab-content {
-            display: none;
+        
+        nav a:hover, nav a.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
         }
-
-        .tab-content.active {
-            display: block;
+        
+        .user-actions {
+            display: flex;
+            gap: 10px;
         }
-
-        .upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 0.75rem;
-            padding: 4rem 2rem;
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .main-card {
             text-align: center;
-            background: white;
-            transition: all 0.2s;
+            padding: 40px 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .drop-area {
+            border: 3px dashed var(--border);
+            border-radius: 16px;
+            padding: 60px 30px;
+            margin: 30px 0;
+            background: var(--light);
+            transition: var(--transition);
             cursor: pointer;
         }
-
-        .upload-area:hover {
-            border-color: #6366f1;
-            background: #f8faff;
+        
+        .drop-area:hover, .drop-area.drag-over {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
         }
-
-        .upload-area.drag-over {
-            border-color: #6366f1;
-            background: #f0f4ff;
+        
+        .drop-area i {
+            font-size: 60px;
+            color: var(--primary);
+            margin-bottom: 20px;
         }
-
-        .upload-icon {
-            font-size: 3rem;
-            color: #6366f1;
-            margin-bottom: 1rem;
+        
+        .file-types {
+            color: var(--gray);
+            margin-top: 20px;
+            font-size: 0.9rem;
         }
-
-        .upload-text {
-            font-size: 1.25rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+        
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
         }
-
-        .upload-subtext {
-            color: #6b7280;
-            margin-bottom: 1.5rem;
+        
+        .or-divider span {
+            padding: 0 15px;
+            color: var(--gray);
         }
-
-        .browse-btn {
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 500;
-            margin-bottom: 1rem;
+        
+        .or-divider::before, .or-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
         }
-
-        .browse-btn:hover {
-            background: #5048e5;
-        }
-
-        .download-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .download-section h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
+        
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 25px;
         }
-
-        .form-label {
+        
+        .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
             font-weight: 500;
-            color: #374151;
+            color: var(--dark);
         }
-
-        .form-input {
+        
+        .form-control {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
+            padding: 14px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
             font-size: 1rem;
-            transition: border-color 0.2s;
+            transition: var(--transition);
         }
-
-        .form-input:focus {
+        
+        .form-control:focus {
+            border-color: var(--primary);
             outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
         }
-
-        .check-btn {
-            width: 100%;
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
+        
+        .expiration-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .expiration-option {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
             cursor: pointer;
-            font-weight: 500;
-            font-size: 1rem;
+            transition: var(--transition);
         }
-
-        .check-btn:hover {
-            background: #5048e5;
+        
+        .expiration-option:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
         }
-
-        .modal-overlay {
+        
+        .expiration-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .expiration-option i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .history-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .history-tab {
+            padding: 10px 20px;
+            background: var(--light);
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .history-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .history-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: var(--transition);
+            background: white;
+            position: relative;
+        }
+        
+        .history-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow);
+            border-color: var(--primary);
+        }
+        
+        .file-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--primary);
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-meta {
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .file-id {
+            background: var(--light);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .status {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .status.upload {
+            background: rgba(76, 201, 240, 0.15);
+            color: #189ab4;
+        }
+        
+        .status.download {
+            background: rgba(114, 9, 183, 0.15);
+            color: var(--secondary);
+        }
+        
+        .expired {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+        }
+        
+        .hidden {
             display: none;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+        }
+        
+        /* Modal Styles */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            background: rgba(0,0,0,0.7);
+            display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
         }
-
-        .modal-overlay.active {
-            display: flex;
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
         }
-
-        .modal {
+        
+        .modal-content {
             background: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-        }
-
-        .modal h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .modal-btn {
+            border-radius: 16px;
             width: 100%;
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 500;
-            margin-bottom: 1rem;
+            max-width: 500px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: translateY(-20px);
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            opacity: 0;
         }
-
-        .modal-btn:hover {
-            background: #5048e5;
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
         }
-
-        .modal-link {
-            text-align: center;
-            color: #6366f1;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .modal-link:hover {
-            text-decoration: underline;
-        }
-
-        .history-list {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .history-info {
-            flex: 1;
-        }
-
-        .history-name {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-
-        .history-details {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .history-type {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            background: #f3f4f6;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            margin-left: 1rem;
-        }
-
-        .upload-type {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .download-type {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .file-list {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 0.5rem;
-        }
-
-        .file-item {
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #e9ecef;
         }
-
-        .file-item:last-child {
-            border-bottom: none;
+        
+        .modal-header h2 {
+            margin-bottom: 0;
         }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .file-icon {
-            width: 24px;
-            height: 24px;
-            background: #6366f1;
-            border-radius: 0.25rem;
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 0.75rem;
+            border-radius: 50%;
         }
-
-        .share-link {
-            font-family: monospace;
-            background: #f3f4f6;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875rem;
+        
+        .close-modal:hover {
+            background: var(--light-gray);
+            color: var(--dark);
         }
-
-        .copy-btn {
-            background: #e5e7eb;
-            border: none;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-size: 0.75rem;
-            margin-left: 0.5rem;
+        
+        .modal-body {
+            padding: 30px;
         }
-
-        .copy-btn:hover {
-            background: #d1d5db;
-        }
-
-        .footer {
+        
+        .switch-form {
             text-align: center;
-            padding: 2rem;
-            color: #6b7280;
-            font-size: 0.875rem;
-            border-top: 1px solid #e9ecef;
-            margin-top: 4rem;
+            margin-top: 20px;
+            font-size: 0.9rem;
         }
-
+        
+        .switch-form a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .switch-form a:hover {
+            text-decoration: underline;
+        }
+        
         .notification {
             position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: #10b981;
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-            transform: translateX(400px);
-            transition: transform 0.3s;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(120%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
         }
-
+        
         .notification.show {
             transform: translateX(0);
         }
-
-        .user-info {
-            display: none;
-            align-items: center;
-            gap: 1rem;
+        
+        .notification.success {
+            border-left: 4px solid var(--success);
         }
-
-        .user-info.active {
-            display: flex;
+        
+        .notification.error {
+            border-left: 4px solid #e63946;
         }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            background: #6366f1;
-            border-radius: 50%;
+        
+        .progress-bar {
+            height: 5px;
+            background: rgba(67, 97, 238, 0.2);
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .file-preview {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: white;
+            gap: 15px;
+            padding: 15px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .file-preview-info {
+            flex: 1;
+        }
+        
+        .expiration-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
-
-        .logout-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 0.875rem;
+        
+        .expiration-badge.active {
+            background: rgba(76, 201, 240, 0.15);
+            color: #189ab4;
         }
-
-        .logout-btn:hover {
-            background: #dc2626;
+        
+        .expiration-badge.expired {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+        }
+        
+        .expiration-badge.warning {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .drop-area {
+                padding: 40px 20px;
+            }
+            
+            .expiration-options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            nav a {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .main-card {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="logo">OmniShare</div>
-        <div id="loginSection">
-            <button class="login-btn" onclick="openModal('loginModal')">Login</button>
-        </div>
-        <div id="userSection" class="user-info">
-            <div class="user-avatar" id="userAvatar">U</div>
-            <span id="userName">User</span>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-    </header>
-
     <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('upload')">Upload</button>
-            <button class="tab" onclick="switchTab('download')">Download</button>
-            <button class="tab" onclick="switchTab('history')">History</button>
-        </div>
-
-        <div id="uploadTab" class="tab-content active">
-            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                <div class="upload-icon">⬆️</div>
-                <div class="upload-text">Drag & Drop Files Here</div>
-                <div class="upload-subtext">or</div>
-                <button class="browse-btn">Browse Files</button>
-                <div class="upload-subtext">Supports all common file formats</div>
-                <input type="file" id="fileInput" multiple hidden>
+        <header>
+            <div class="logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>OmniShare</span>
             </div>
-            <div id="fileList" class="file-list" style="display: none;"></div>
-        </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" data-view="upload"><i class="fas fa-upload"></i> Upload</a></li>
+                    <li><a href="#" data-view="download"><i class="fas fa-download"></i> Download</a></li>
+                    <li><a href="#" data-view="history"><i class="fas fa-history"></i> History</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <button class="btn btn-outline" id="loginBtn">Login</button>
+                <button class="btn btn-primary" id="signupBtn">Sign Up</button>
+            </div>
+        </header>
 
-        <div id="downloadTab" class="tab-content">
-            <div class="download-section">
-                <h2>Download Files</h2>
-                <div class="form-group">
-                    <label class="form-label">File Link or ID</label>
-                    <input type="text" class="form-input" id="downloadInput" placeholder="Paste file link or ID here">
+        <main>
+            <!-- Upload View -->
+            <section id="uploadView" class="view">
+                <div class="card main-card">
+                    <h1>Share Files with OmniShare</h1>
+                    <p class="file-types">Upload files and share them with anyone, anywhere</p>
+                    
+                    <div class="drop-area" id="dropArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Drag & Drop Files Here</h3>
+                        <div class="or-divider">
+                            <span>or</span>
+                        </div>
+                        <button class="btn btn-primary" id="browseBtn">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                        <div class="file-types">
+                            Supports PDF, DOC, XLS, JPG, PNG, MP4, ZIP and more
+                        </div>
+                    </div>
+                    
+                    <div id="filePreview" class="hidden">
+                        <div class="file-preview">
+                            <div class="file-icon">
+                                <i class="fas fa-file"></i>
+                            </div>
+                            <div class="file-preview-info">
+                                <div class="file-name" id="previewFileName"></div>
+                                <div class="file-meta">
+                                    <span id="previewFileSize"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3>Set Expiration</h3>
+                        <div class="expiration-options">
+                            <div class="expiration-option" data-days="1">
+                                <i class="fas fa-bolt"></i>
+                                <div>1 Day</div>
+                            </div>
+                            <div class="expiration-option selected" data-days="7">
+                                <i class="fas fa-calendar-week"></i>
+                                <div>7 Days</div>
+                            </div>
+                            <div class="expiration-option" data-days="30">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div>30 Days</div>
+                            </div>
+                            <div class="expiration-option" data-days="0">
+                                <i class="fas fa-infinity"></i>
+                                <div>Never</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress" id="uploadProgress"></div>
+                        </div>
+                        
+                        <div class="buttons" style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button class="btn btn-outline" id="cancelUpload">Cancel</button>
+                            <button class="btn btn-primary" id="confirmUpload">Upload File</button>
+                        </div>
+                    </div>
                 </div>
-                <button class="check-btn" onclick="checkFile()">🔽 Check File</button>
-            </div>
-        </div>
+            </section>
 
-        <div id="historyTab" class="tab-content">
-            <div class="history-list">
-                <h2>File History</h2>
-                <div id="historyContent">
-                    <p style="text-align: center; color: #6b7280; padding: 2rem;">No history available. Upload or download files to see history.</p>
+            <!-- Download View -->
+            <section id="downloadView" class="view hidden">
+                <div class="card">
+                    <h2>Download Files</h2>
+                    <div class="form-group">
+                        <label>File Link or ID</label>
+                        <input type="text" class="form-control" id="fileIdInput" placeholder="Paste file link or ID here">
+                    </div>
+                    <button class="btn btn-primary" id="downloadBtn">
+                        <i class="fas fa-download"></i> Download File
+                    </button>
+                    
+                    <div class="or-divider">
+                        <span>or</span>
+                    </div>
+                    
+                    <h3>Check File Information</h3>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="checkFileId" placeholder="Enter file ID to check">
+                    </div>
+                    <button class="btn btn-outline" id="checkFileBtn">
+                        <i class="fas fa-search"></i> Check File
+                    </button>
+                    
+                    <div id="fileInfoCard" class="card hidden" style="margin-top: 20px;">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-file-pdf"></i>
+                                <span id="infoFileName">Annual_Report.pdf</span>
+                            </div>
+                            <div class="file-meta">
+                                <div>ID: <span class="file-id" id="infoFileId">AB4X9F</span></div>
+                                <div>Size: <span id="infoFileSize">4.2 MB</span></div>
+                                <div>Uploaded: <span id="infoUploadDate">Jun 15, 2023</span></div>
+                                <div>Expires: <span id="infoExpiryDate">Jun 22, 2023</span></div>
+                                <div>Status: <span class="status active" id="infoFileStatus">Active</span></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            <!-- History View -->
+            <section id="historyView" class="view hidden">
+                <div class="card">
+                    <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                        <h2>File History</h2>
+                        <div class="history-tabs">
+                            <button class="history-tab active" data-history-type="uploaded">Uploaded Files</button>
+                            <button class="history-tab" data-history-type="downloaded">Downloaded Files</button>
+                        </div>
+                    </div>
+                    
+                    <div class="history-grid" id="historyList">
+                        <!-- History items will be added here dynamically -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>OmniShare</p>
+            <p>© 2025 OmniShare. All rights reserved.</p>
+        </footer>
     </div>
 
     <!-- Login Modal -->
-    <div id="loginModal" class="modal-overlay">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
-            <h2>Login to OmniShare</h2>
-            <form onsubmit="login(event)">
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to OmniShare</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" id="loginEmail" placeholder="Enter your email" required>
+                    <label>Email</label>
+                    <input type="email" class="form-control" placeholder="Enter your email">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
+                    <label>Password</label>
+                    <input type="password" class="form-control" placeholder="Enter your password">
                 </div>
-                <button type="submit" class="modal-btn">Login</button>
-            </form>
-            <div style="text-align: center;">
-                <span style="color: #6b7280;">Don't have an account? </span>
-                <a href="#" class="modal-link" onclick="switchModal('loginModal', 'signupModal')">Sign up</a>
+                <button class="btn btn-primary" style="width: 100%;">
+                    Login
+                </button>
+                <div class="switch-form">
+                    Don't have an account? <a href="#" id="goToSignup">Sign up</a>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Signup Modal -->
-    <div id="signupModal" class="modal-overlay">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('signupModal')">&times;</button>
-            <h2>Sign up for OmniShare</h2>
-            <form onsubmit="signup(event)">
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create an Account</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" class="form-input" id="signupName" placeholder="Enter your full name" required>
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" placeholder="Enter your full name">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" id="signupEmail" placeholder="Enter your email" required>
+                    <label>Email</label>
+                    <input type="email" class="form-control" placeholder="Enter your email">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" id="signupPassword" placeholder="Create a password" required>
+                    <label>Password</label>
+                    <input type="password" class="form-control" placeholder="Create a password">
                 </div>
-                <button type="submit" class="modal-btn">Sign Up</button>
-            </form>
-            <div style="text-align: center;">
-                <span style="color: #6b7280;">Already have an account? </span>
-                <a href="#" class="modal-link" onclick="switchModal('signupModal', 'loginModal')">Login</a>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" class="form-control" placeholder="Confirm your password">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;">
+                    Sign Up
+                </button>
+                <div class="switch-form">
+                    Already have an account? <a href="#" id="goToLogin">Login</a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="notification" class="notification"></div>
-
-    <footer class="footer">
-        <div class="logo" style="justify-content: center; margin-bottom: 0.5rem;">OmniShare</div>
-        <div>© 2025 OmniShare. All rights reserved.</div>
-    </footer>
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span>File uploaded successfully!</span>
+    </div>
 
     <script>
-        // Global state
-        let currentUser = null;
-        let uploadedFiles = [];
-        let downloadHistory = [];
-        let fileHistory = [];
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
-            loadHistory();
-            setupDragAndDrop();
-        });
-
-        // Tab switching
-        function switchTab(tabName) {
-            // Remove active class from all tabs and content
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            // Add active class to clicked tab and corresponding content
-            event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
-        }
-
-        // Modal functions
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        function switchModal(fromModal, toModal) {
-            closeModal(fromModal);
-            openModal(toModal);
-        }
-
-        // Authentication functions
-        function login(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            // Simulate login (in real app, this would be an API call)
-            if (email && password) {
-                currentUser = {
-                    name: email.split('@')[0],
-                    email: email,
-                    avatar: email.charAt(0).toUpperCase()
-                };
-                
-                updateUIForLoggedInUser();
-                closeModal('loginModal');
-                showNotification('Login successful!');
-                saveUserData();
-            }
-        }
-
-        function signup(event) {
-            event.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            
-            // Simulate signup (in real app, this would be an API call)
-            if (name && email && password) {
-                currentUser = {
-                    name: name,
-                    email: email,
-                    avatar: name.charAt(0).toUpperCase()
-                };
-                
-                updateUIForLoggedInUser();
-                closeModal('signupModal');
-                showNotification('Account created successfully!');
-                saveUserData();
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            updateUIForLoggedOutUser();
-            showNotification('Logged out successfully!');
-            clearUserData();
-        }
-
-        function updateUIForLoggedInUser() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('userSection').classList.add('active');
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userAvatar').textContent = currentUser.avatar;
-        }
-
-        function updateUIForLoggedOutUser() {
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('userSection').classList.remove('active');
-        }
-
-        // File upload functions
-        function setupDragAndDrop() {
-            const uploadArea = document.getElementById('uploadArea');
-            const fileInput = document.getElementById('fileInput');
-
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('drag-over');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('drag-over');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('drag-over');
-                const files = Array.from(e.dataTransfer.files);
-                handleFiles(files);
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const files = Array.from(e.target.files);
-                handleFiles(files);
-            });
-        }
-
-        function handleFiles(files) {
-            if (!currentUser) {
-                openModal('loginModal');
-                showNotification('Please login to upload files.', 'warning');
-                return;
-            }
-
-            const fileList = document.getElementById('fileList');
-            fileList.style.display = 'block';
-            fileList.innerHTML = '<h3>Selected Files:</h3>';
-
-            files.forEach((file, index) => {
-                const fileId = generateFileId();
-                const shareLink = `https://omnishare.com/f/${fileId}`;
-                
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <div class="file-info">
-                        <div class="file-icon">${getFileIcon(file.type)}</div>
-                        <div>
-                            <div class="history-name">${file.name}</div>
-                            <div class="history-details">${formatFileSize(file.size)} • ${file.type || 'Unknown'}</div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="share-link">${shareLink}</span>
-                        <button class="copy-btn" onclick="copyToClipboard('${shareLink}')">Copy</button>
-                    </div>
-                `;
-                fileList.appendChild(fileItem);
-
-                // Add to upload history
-                const uploadRecord = {
-                    id: fileId,
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    uploadDate: new Date().toLocaleDateString(),
-                    shareLink: shareLink,
-                    action: 'upload'
-                };
-                
-                uploadedFiles.push(uploadRecord);
-                fileHistory.push(uploadRecord);
-            });
-
-            saveHistory();
-            showNotification(`${files.length} file(s) uploaded successfully!`);
-        }
-
-        // Download functions
-        function checkFile() {
-            const input = document.getElementById('downloadInput');
-            const linkOrId = input.value.trim();
-            
-            if (!linkOrId) {
-                showNotification('Please enter a file link or ID.', 'warning');
-                return;
-            }
-
-            // Simulate file check (in real app, this would be an API call)
-            const fileName = 'sample-document.pdf';
-            const fileSize = '2.5 MB';
-            
-            // Add to download history
-            const downloadRecord = {
-                id: generateFileId(),
-                name: fileName,
-                size: fileSize,
-                downloadDate: new Date().toLocaleDateString(),
-                sourceLink: linkOrId,
-                action: 'download'
-            };
-            
-            downloadHistory.push(downloadRecord);
-            fileHistory.push(downloadRecord);
-            saveHistory();
-            
-            showNotification('File downloaded successfully!');
-            input.value = '';
-        }
-
-        // History functions
-        function loadHistory() {
-            const savedHistory = JSON.parse(localStorage.getItem('omniShareHistory') || '[]');
-            fileHistory = savedHistory;
-            updateHistoryDisplay();
-        }
-
-        function saveHistory() {
-            localStorage.setItem('omniShareHistory', JSON.stringify(fileHistory));
-            updateHistoryDisplay();
-        }
-
-        function updateHistoryDisplay() {
-            const historyContent = document.getElementById('historyContent');
-            
-            if (fileHistory.length === 0) {
-                historyContent.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No history available. Upload or download files to see history.</p>';
-                return;
-            }
-
-            historyContent.innerHTML = '';
-            
-            // Sort history by date (newest first)
-            const sortedHistory = [...fileHistory].reverse();
-            
-            sortedHistory.forEach(item => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                
-                const date = item.uploadDate || item.downloadDate;
-                const typeClass = item.action === 'upload' ? 'upload-type' : 'download-type';
-                const actionText = item.action === 'upload' ? 'Uploaded' : 'Downloaded';
-                const icon = item.action === 'upload' ? '⬆️' : '⬇️';
-                
-                historyItem.innerHTML = `
-                    <div class="history-info">
-                        <div class="history-name">${icon} ${item.name}</div>
-                        <div class="history-details">${actionText} on ${date} • ${item.size || 'Unknown size'}</div>
-                    </div>
-                    <span class="history-type ${typeClass}">${item.action.toUpperCase()}</span>
-                `;
-                
-                historyContent.appendChild(historyItem);
-            });
-        }
-
-        // Utility functions
+        // Generate a random file ID (6-digit alphanumeric)
         function generateFileId() {
-            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let id = '';
+            for (let i = 0; i < 6; i++) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return id;
         }
-
+        
+        // Format file size
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -820,67 +845,523 @@
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-
-        function getFileIcon(type) {
-            if (type.startsWith('image/')) return '🖼️';
-            if (type.startsWith('video/')) return '🎥';
-            if (type.startsWith('audio/')) return '🎵';
-            if (type.includes('pdf')) return '📄';
-            if (type.includes('text')) return '📝';
-            if (type.includes('zip') || type.includes('rar')) return '📦';
-            return '📄';
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification('Link copied to clipboard!');
-            }).catch(() => {
-                showNotification('Failed to copy link.', 'error');
+        
+        // Format date
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
             });
         }
-
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = 'notification show';
+        
+        // Calculate expiration date
+        function calculateExpirationDate(days) {
+            if (days === 0) return null; // Never expires
             
-            if (type === 'warning') {
-                notification.style.background = '#f59e0b';
-            } else if (type === 'error') {
-                notification.style.background = '#ef4444';
+            const date = new Date();
+            date.setDate(date.getDate() + days);
+            return date;
+        }
+        
+        // Check if a date is expired
+        function isExpired(date) {
+            if (!date) return false; // Never expires
+            return new Date() > date;
+        }
+        
+        // Get expiration status
+        function getExpirationStatus(expiryDate) {
+            if (!expiryDate) return {text: "Never expires", class: "active"};
+            
+            const today = new Date();
+            const diffTime = expiryDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) {
+                return {text: "Expired", class: "expired"};
+            } else if (diffDays <= 3) {
+                return {text: `Expires in ${diffDays} day${diffDays > 1 ? 's' : ''}`, class: "warning"};
             } else {
-                notification.style.background = '#10b981';
+                return {text: `Expires ${formatDate(expiryDate)}`, class: "active"};
             }
+        }
+
+        // Sample file history data
+        const fileHistory = [
+            {
+                id: "AB4X9F",
+                name: "Annual_Report_2023.pdf",
+                type: "pdf",
+                size: 4200000,
+                date: new Date('2023-06-15'),
+                action: "upload",
+                expiryDate: new Date('2023-06-22')
+            },
+            {
+                id: "Z8Y2W1",
+                name: "Vacation_Photos.zip",
+                type: "zip",
+                size: 18700000,
+                date: new Date('2023-06-10'),
+                action: "download"
+            },
+            {
+                id: "C7D3E6",
+                name: "Project_Proposal.docx",
+                type: "doc",
+                size: 1500000,
+                date: new Date('2023-06-08'),
+                action: "upload",
+                expiryDate: new Date('2023-06-15')
+            },
+            {
+                id: "F9G1H2",
+                name: "Financial_Data.xlsx",
+                type: "xls",
+                size: 3800000,
+                date: new Date('2023-06-05'),
+                action: "download"
+            },
+            {
+                id: "K5L6M7",
+                name: "Presentation_Slides.pptx",
+                type: "ppt",
+                size: 7300000,
+                date: new Date('2023-06-02'),
+                action: "upload",
+                expiryDate: new Date('2023-07-02')
+            },
+            {
+                id: "P3Q9R2",
+                name: "Design_Assets.zip",
+                type: "zip",
+                size: 24100000,
+                date: new Date('2023-05-28'),
+                action: "download"
+            }
+        ];
+
+        // Current state
+        let currentFile = null;
+        let selectedExpirationDays = 7;
+        let currentHistoryType = 'uploaded';
+
+        // View management
+        function showView(viewId) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.add('hidden');
+            });
+            
+            // Show the requested view
+            document.getElementById(viewId).classList.remove('hidden');
+            
+            // Update active nav link
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.querySelector(`nav a[data-view="${viewId}"]`).closest('a').classList.add('active');
+            
+            // If history view, render it
+            if (viewId === 'historyView') {
+                renderFileHistory(currentHistoryType);
+            }
+        }
+
+        // Modal management
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            document.body.style.overflow = '';
+        }
+
+        // Show notification
+        function showNotification(message, isSuccess = true) {
+            const notification = document.getElementById('notification');
+            const icon = notification.querySelector('i');
+            const text = notification.querySelector('span');
+            
+            text.textContent = message;
+            
+            if (isSuccess) {
+                notification.classList.add('success');
+                notification.classList.remove('error');
+                icon.className = 'fas fa-check-circle';
+            } else {
+                notification.classList.add('error');
+                notification.classList.remove('success');
+                icon.className = 'fas fa-exclamation-circle';
+            }
+            
+            notification.classList.add('show');
             
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
 
-        // Local storage functions
-        function saveUserData() {
-            if (currentUser) {
-                localStorage.setItem('omniShareUser', JSON.stringify(currentUser));
+        // Render file history
+        function renderFileHistory(type) {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            const filteredHistory = fileHistory.filter(file => 
+                type === 'uploaded' ? file.action === 'upload' : file.action === 'download'
+            );
+            
+            if (filteredHistory.length === 0) {
+                historyList.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <h3>No files found</h3>
+                        <p>Your ${type} files will appear here</p>
+                    </div>
+                `;
+                return;
             }
+            
+            filteredHistory.forEach(file => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                let fileIcon;
+                switch(file.type) {
+                    case 'pdf': fileIcon = 'fa-file-pdf'; break;
+                    case 'doc': fileIcon = 'fa-file-word'; break;
+                    case 'xls': fileIcon = 'fa-file-excel'; break;
+                    case 'ppt': fileIcon = 'fa-file-powerpoint'; break;
+                    case 'zip': fileIcon = 'fa-file-archive'; break;
+                    default: fileIcon = 'fa-file';
+                }
+                
+                // For uploaded files, show expiration info
+                let expirationInfo = '';
+                let expirationBadge = '';
+                
+                if (file.action === 'upload' && file.expiryDate) {
+                    const status = getExpirationStatus(file.expiryDate);
+                    expirationInfo = `<div>Expires: ${formatDate(file.expiryDate)}</div>`;
+                    expirationBadge = `<div class="expiration-badge ${status.class}">${status.text}</div>`;
+                } else if (file.action === 'upload' && !file.expiryDate) {
+                    expirationBadge = `<div class="expiration-badge active">Never expires</div>`;
+                }
+                
+                historyItem.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="file-icon">
+                            <i class="fas ${fileIcon}"></i>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name">
+                                ${file.name}
+                            </div>
+                            <div class="file-id">ID: ${file.id}</div>
+                            <div class="status ${file.action}">${file.action === 'upload' ? 'Uploaded' : 'Downloaded'}</div>
+                        </div>
+                    </div>
+                    <div class="file-meta">
+                        <div>Size: ${formatFileSize(file.size)}</div>
+                        <div>Date: ${formatDate(file.date)}</div>
+                        ${expirationInfo}
+                    </div>
+                    ${expirationBadge}
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
         }
 
-        function loadUserData() {
-            const savedUser = localStorage.getItem('omniShareUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                updateUIForLoggedInUser();
-            }
+        // Simulate file upload
+        function uploadFile(file, expirationDays) {
+            const progressBar = document.getElementById('uploadProgress');
+            let progress = 0;
+            
+            const uploadInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(uploadInterval);
+                    
+                    // Generate file ID
+                    const fileId = generateFileId();
+                    
+                    // Calculate expiration date
+                    const expiryDate = expirationDays > 0 ? calculateExpirationDate(expirationDays) : null;
+                    
+                    // Add to history
+                    fileHistory.unshift({
+                        id: fileId,
+                        name: file.name,
+                        type: file.name.split('.').pop(),
+                        size: file.size,
+                        date: new Date(),
+                        action: 'upload',
+                        expiryDate: expiryDate
+                    });
+                    
+                    // Show notification
+                    showNotification('File uploaded successfully!');
+                    
+                    // Reset UI
+                    document.getElementById('filePreview').classList.add('hidden');
+                    document.getElementById('dropArea').classList.remove('hidden');
+                    progressBar.style.width = '0%';
+                    
+                    // Update history if we're on that view
+                    if (document.getElementById('historyView').classList.contains('hidden') === false) {
+                        renderFileHistory(currentHistoryType);
+                    }
+                    
+                    // Show file ID to user
+                    showNotification(`Your file ID: ${fileId}`, true);
+                }
+                
+                progressBar.style.width = `${progress}%`;
+            }, 200);
         }
 
-        function clearUserData() {
-            localStorage.removeItem('omniShareUser');
-        }
-
-        // Close modal when clicking outside
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-overlay')) {
-                e.target.classList.remove('active');
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Render initial file history
+            renderFileHistory(currentHistoryType);
+            
+            // Navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const view = link.getAttribute('data-view');
+                    showView(`${view}View`);
+                });
+            });
+            
+            // History tabs
+            document.querySelectorAll('.history-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.history-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+                    currentHistoryType = tab.getAttribute('data-history-type');
+                    renderFileHistory(currentHistoryType);
+                });
+            });
+            
+            // Login/Signup buttons
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                openModal('loginModal');
+            });
+            
+            document.getElementById('signupBtn').addEventListener('click', () => {
+                openModal('signupModal');
+            });
+            
+            // Close modals
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', () => {
+                    closeAllModals();
+                });
+            });
+            
+            // Switch between login and signup modals
+            document.getElementById('goToSignup').addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal('loginModal');
+                openModal('signupModal');
+            });
+            
+            document.getElementById('goToLogin').addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal('signupModal');
+                openModal('loginModal');
+            });
+            
+            // Close modal when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeAllModals();
+                    }
+                });
+            });
+            
+            // Expiration options
+            document.querySelectorAll('.expiration-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.expiration-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                    selectedExpirationDays = parseInt(option.getAttribute('data-days'));
+                });
+            });
+            
+            // Drag and drop area
+            const dropArea = document.getElementById('dropArea');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.classList.add('drag-over');
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.classList.remove('drag-over');
+                }, false);
+            });
+            
+            dropArea.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length) {
+                    handleFileSelection(files[0]);
+                }
+            }, false);
+            
+            // Browse files button
+            document.getElementById('browseBtn').addEventListener('click', () => {
+                // Create a file input
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.style.display = 'none';
+                
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) {
+                        handleFileSelection(e.target.files[0]);
+                    }
+                });
+                
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                document.body.removeChild(fileInput);
+            });
+            
+            // Handle file selection
+            function handleFileSelection(file) {
+                currentFile = file;
+                
+                // Update preview
+                document.getElementById('previewFileName').textContent = file.name;
+                document.getElementById('previewFileSize').textContent = formatFileSize(file.size);
+                
+                // Show preview and hide drop area
+                document.getElementById('dropArea').classList.add('hidden');
+                document.getElementById('filePreview').classList.remove('hidden');
+            }
+            
+            // Cancel upload
+            document.getElementById('cancelUpload').addEventListener('click', () => {
+                document.getElementById('filePreview').classList.add('hidden');
+                document.getElementById('dropArea').classList.remove('hidden');
+                document.getElementById('uploadProgress').style.width = '0%';
+                currentFile = null;
+            });
+            
+            // Confirm upload
+            document.getElementById('confirmUpload').addEventListener('click', () => {
+                if (currentFile) {
+                    uploadFile(currentFile, selectedExpirationDays);
+                }
+            });
+            
+            // Download file
+            document.getElementById('downloadBtn').addEventListener('click', () => {
+                const fileId = document.getElementById('fileIdInput').value.trim();
+                if (!fileId) {
+                    showNotification('Please enter a file ID', false);
+                    return;
+                }
+                
+                // Find file in history
+                const file = fileHistory.find(f => f.id === fileId);
+                
+                if (file) {
+                    if (file.action === 'upload' && file.expiryDate && isExpired(file.expiryDate)) {
+                        showNotification('This file has expired', false);
+                    } else {
+                        // Simulate download
+                        showNotification('File download started');
+                        
+                        // Add to download history
+                        fileHistory.unshift({
+                            id: file.id,
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            date: new Date(),
+                            action: 'download'
+                        });
+                        
+                        // Update history
+                        if (!document.getElementById('historyView').classList.contains('hidden')) {
+                            renderFileHistory(currentHistoryType);
+                        }
+                    }
+                } else {
+                    showNotification('File not found', false);
+                }
+            });
+            
+            // Check file info
+            document.getElementById('checkFileBtn').addEventListener('click', () => {
+                const fileId = document.getElementById('checkFileId').value.trim();
+                if (!fileId) {
+                    showNotification('Please enter a file ID', false);
+                    return;
+                }
+                
+                // Find file in history
+                const file = fileHistory.find(f => f.id === fileId && f.action === 'upload');
+                const fileInfoCard = document.getElementById('fileInfoCard');
+                
+                if (file) {
+                    // Update file info
+                    document.getElementById('infoFileName').textContent = file.name;
+                    document.getElementById('infoFileId').textContent = file.id;
+                    document.getElementById('infoFileSize').textContent = formatFileSize(file.size);
+                    document.getElementById('infoUploadDate').textContent = formatDate(file.date);
+                    
+                    if (file.expiryDate) {
+                        const status = getExpirationStatus(file.expiryDate);
+                        document.getElementById('infoExpiryDate').textContent = formatDate(file.expiryDate);
+                        document.getElementById('infoFileStatus').textContent = status.text;
+                        document.getElementById('infoFileStatus').className = `status ${status.class}`;
+                    } else {
+                        document.getElementById('infoExpiryDate').textContent = "Never";
+                        document.getElementById('infoFileStatus').textContent = "Active";
+                        document.getElementById('infoFileStatus').className = "status active";
+                    }
+                    
+                    // Show file info card
+                    fileInfoCard.classList.remove('hidden');
+                } else {
+                    showNotification('File not found', false);
+                    fileInfoCard.classList.add('hidden');
+                }
+            });
         });
     </script>
 </body>
