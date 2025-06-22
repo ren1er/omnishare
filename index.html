@@ -993,12 +993,18 @@
     </div>
 
     <script>
-        // Supabase initialization
-        const SUPABASE_URL = 'https://iwxqdyyevgzgsrkxbcrb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eHFkeXlldmd6Z3Nya3hiY3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTE1NjQsImV4cCI6MjA2NjE2NzU2NH0.4FwS5IvD92L2mvCbRu1TJoZBIOsRkft5UaKCJLncD-8';
-        
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
+        let currentFile = null;
+        let selectedExpirationDays = 7;
+        let currentHistoryType = 'uploaded';
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+        // Add your Supabase credentials here
+            const SUPABASE_URL = 'https://iwxqdyyevgzgsrkxbcrb.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eHFkeXlldmd6Z3Nya3hiY3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTE1NjQsImV4cCI6MjA2NjE2NzU2NH0.4FwS5IvD92L2mvCbRu1TJoZBIOsRkft5UaKCJLncD-8';
+            
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
         // Format file size
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -1757,6 +1763,7 @@
                     showNotification('Error fetching file info: ' + error.message, false);
                 }
             });
+        });
         });
     </script>
 </body>
