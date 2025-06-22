@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* All your existing CSS styles */
         * {
             margin: 0;
             padding: 0;
@@ -995,11 +996,18 @@
     <script>
         // Supabase initialization
         const SUPABASE_URL = 'https://iwxqdyyevgzgsrkxbcrb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eHFkeXlldmd6Z3Nya3J4YmNydiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzUwNTkxNTY0LCJleHAiOjIwNjYxNjc1NjR9.4FwS5IvD92L2mvCbRu1TJoZBIOsRkft5UaKCJLncD-8';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eHFkeXlldmd6Z3Nya3hiY3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTE1NjQsImV4cCI6MjA2NjE2NzU2NH0.4FwS5IvD92L2mvCbRu1TJoZBIOsRkft5UaKCJLncD-8';
         
+        // Create a global supabase instance
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // Format file size
+        // State management
+        let currentFile = null;
+        let selectedExpirationDays = 7;
+        let currentHistoryType = 'uploaded';
+        let currentUser = null;
+
+        // Utility functions
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -1008,7 +1016,6 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
         
-        // Format date
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('en-US', { 
@@ -1018,7 +1025,6 @@
             });
         }
         
-        // Calculate expiration date
         function calculateExpirationDate(days) {
             if (days === 0) return null; // Never expires
             
@@ -1027,14 +1033,12 @@
             return date.toISOString();
         }
         
-        // Check if a date is expired
         function isExpired(dateString) {
             if (!dateString) return false; // Never expires
             const expiryDate = new Date(dateString);
             return new Date() > expiryDate;
         }
         
-        // Get expiration status
         function getExpirationStatus(expiryDate) {
             if (!expiryDate) return {text: "Never expires", class: "active"};
             
@@ -1052,13 +1056,7 @@
             }
         }
 
-        // Current state
-        let currentFile = null;
-        let selectedExpirationDays = 7;
-        let currentHistoryType = 'uploaded';
-        let currentUser = null;
-
-        // Update stats
+        // Core application functions
         async function updateStats() {
             if (currentUser) {
                 // Get user upload count
@@ -1084,7 +1082,6 @@
             }
         }
         
-        // Set current user
         function setCurrentUser(user) {
             currentUser = user;
             
@@ -1098,16 +1095,13 @@
             document.getElementById('loginBtn').classList.add('hidden');
             document.getElementById('signupBtn').classList.add('hidden');
             
-            // Update stats
+            // Update stats and history
             updateStats();
-            
-            // Update history if we're on that view
             if (document.getElementById('historyView').classList.contains('hidden') === false) {
                 renderFileHistory(currentHistoryType);
             }
         }
         
-        // View management
         function showView(viewId) {
             // Hide all views
             document.querySelectorAll('.view').forEach(view => {
@@ -1122,7 +1116,7 @@
                 link.classList.remove('active');
             });
             
-            document.querySelector(`nav a[data-view="${viewId}"]`).closest('a').classList.add('active');
+            document.querySelector(`nav a[data-view="${viewId}"]`).classList.add('active');
             
             // If history view, render it
             if (viewId === 'historyView') {
@@ -1130,7 +1124,6 @@
             }
         }
 
-        // Modal management
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1148,7 +1141,6 @@
             document.body.style.overflow = '';
         }
 
-        // Show notification
         function showNotification(message, isSuccess = true) {
             const notification = document.getElementById('notification');
             const icon = notification.querySelector('i');
@@ -1173,7 +1165,6 @@
             }, 3000);
         }
 
-        // Render file history
         async function renderFileHistory(type) {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
@@ -1319,7 +1310,6 @@
             });
         }
 
-        // Upload file to Supabase
         async function uploadFile(file, expirationDays) {
             const progressBar = document.getElementById('uploadProgress');
             let progress = 0;
@@ -1367,7 +1357,6 @@
             }
         }
 
-        // Download file
         async function downloadFile(fileId) {
             if (!currentUser) {
                 showNotification('Please log in to download files', false);
@@ -1419,7 +1408,6 @@
             }
         }
 
-        // Generate file ID
         function generateFileId() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let id = '';
@@ -1429,20 +1417,12 @@
             return id;
         }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize Supabase client first
-            const SUPABASE_URL = 'https://iwxqdyyevgzgsrkxbcrb.supabase.co';
-            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eHFkeXlldmd6Z3Nya3J4YmNydiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzUwNTkxNTY0LCJleHAiOjIwNjYxNjc1NjR9.4FwS5IvD92L2mvCbRu1TJoZBIOsRkft5UaKCJLncD-8';
-            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        // Initialize the application
+        async function initApp() {
+            // Update DB status
+            document.getElementById('dbStatus').innerHTML = '<i class="fas fa-circle"></i> Database: Connecting to Supabase...';
+            
             try {
-                // Set up event listeners FIRST
-                setupEventListeners();
-
-                // Then do async operations
-                document.getElementById('dbStatus').innerHTML = '<i class="fas fa-circle"></i> Database: Connecting to Supabase...';
-                
                 // Check Supabase connection
                 const { data, error } = await supabase
                     .from('files')
@@ -1454,320 +1434,330 @@
                 } else {
                     document.getElementById('dbStatus').innerHTML = '<i class="fas fa-circle" style="color: var(--danger);"></i> Database: Connection Error';
                 }
-             } catch (error) {
+            } catch (error) {
                 document.getElementById('dbStatus').innerHTML = '<i class="fas fa-circle" style="color: var(--danger);"></i> Database: Connection Error';
             }
             
             // Check if user is already logged in
             const { data: { user } } = await supabase.auth.getUser();
             if (user) setCurrentUser(user);
-            
-            function setupEventListeners() {
-                // Navigation
-                document.querySelectorAll('nav a').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const view = link.getAttribute('data-view');
-                        showView(`${view}View`);
-                    });
-                });
-                
-                // History tabs
-                document.querySelectorAll('.history-tab').forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        document.querySelectorAll('.history-tab').forEach(t => {
-                            t.classList.remove('active');
-                        });
-                        tab.classList.add('active');
-                        currentHistoryType = tab.getAttribute('data-history-type');
-                        renderFileHistory(currentHistoryType);
-                    });
-                });
-                
-                // Login/Signup buttons
-                document.getElementById('loginBtn').addEventListener('click', () => {
-                    openModal('loginModal');
-                });
-                
-                document.getElementById('signupBtn').addEventListener('click', () => {
-                    openModal('signupModal');
-                });
-                
-                // Logout button
-                document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    const { error } = await supabase.auth.signOut();
-                    if (!error) {
-                        currentUser = null;
-                        document.getElementById('logoutBtn').classList.add('hidden');
-                        document.getElementById('loginBtn').classList.remove('hidden');
-                        document.getElementById('signupBtn').classList.remove('hidden');
-                        document.getElementById('userAvatar').textContent = 'GU';
-                        showNotification('You have been logged out');
-                    }
-                });
-                
-                // Login submit
-                document.getElementById('loginSubmit').addEventListener('click', async () => {
-                    const email = document.getElementById('loginEmail').value.trim();
-                    const password = document.getElementById('loginPassword').value.trim();
-                    
-                    if (!email || !password) {
-                        showNotification('Please fill in all fields', false);
-                        return;
-                    }
-                    
-                    try {
-                        const { data, error } = await supabase.auth.signInWithPassword({
-                            email: email,
-                            password: password
-                        });
-                        
-                        if (error) throw error;
-                        
-                        setCurrentUser(data.user);
-                        closeAllModals();
-                        showNotification('Login successful!');
-                    } catch (error) {
-                        showNotification('Login failed: ' + error.message, false);
-                    }
-                });
-                
-                // Signup submit
-                document.getElementById('signupSubmit').addEventListener('click', async () => {
-                    const name = document.getElementById('signupName').value.trim();
-                    const email = document.getElementById('signupEmail').value.trim();
-                    const password = document.getElementById('signupPassword').value;
-                    const confirm = document.getElementById('signupConfirm').value;
-                    
-                    if (!name || !email || !password || !confirm) {
-                        showNotification('Please fill in all fields', false);
-                        return;
-                    }
-                    
-                    if (password !== confirm) {
-                        showNotification('Passwords do not match', false);
-                        return;
-                    }
-                    
-                    try {
-                        const { data, error } = await supabase.auth.signUp({
-                            email: email,
-                            password: password,
-                            options: {
-                                data: {
-                                    full_name: name
-                                }
-                            }
-                        });
-                        
-                        if (error) throw error;
-                        
-                        // Create user profile
-                        await supabase
-                            .from('profiles')
-                            .insert([{
-                                id: data.user.id,
-                                email: email,
-                                full_name: name
-                            }]);
-                        
-                        setCurrentUser(data.user);
-                        closeAllModals();
-                        showNotification('Account created successfully! Please check your email to confirm your account.');
-                    } catch (error) {
-                        showNotification('Signup failed: ' + error.message, false);
-                    }
-                });
-                
-                // Close modals
-                document.querySelectorAll('.close-modal').forEach(button => {
-                    button.addEventListener('click', () => {
-                        closeAllModals();
-                    });
-                });
-                
-                // Switch between login and signup modals
-                document.getElementById('goToSignup').addEventListener('click', (e) => {
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    closeModal('loginModal');
-                    openModal('signupModal');
+                    const view = link.getAttribute('data-view');
+                    showView(`${view}View`);
                 });
-                
-                document.getElementById('goToLogin').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    closeModal('signupModal');
-                    openModal('loginModal');
-                });
-                
-                // Close modal when clicking outside
-                document.querySelectorAll('.modal').forEach(modal => {
-                    modal.addEventListener('click', (e) => {
-                        if (e.target === modal) {
-                            closeAllModals();
-                        }
-                    });
-                });
-                
-                // Expiration options
-                document.querySelectorAll('.expiration-option').forEach(option => {
-                    option.addEventListener('click', () => {
-                        document.querySelectorAll('.expiration-option').forEach(opt => {
-                            opt.classList.remove('selected');
-                        });
-                        option.classList.add('selected');
-                        selectedExpirationDays = parseInt(option.getAttribute('data-days'));
-                    });
-                });
-                
-                // Drag and drop area
-                const dropArea = document.getElementById('dropArea');
-                
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, preventDefaults, false);
-                });
-                
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-                
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, () => {
-                        dropArea.classList.add('drag-over');
-                    }, false);
-                });
-                
-                ['dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, () => {
-                        dropArea.classList.remove('drag-over');
-                    }, false);
-                });
-                
-                dropArea.addEventListener('drop', (e) => {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-                    
-                    if (files.length) {
-                        handleFileSelection(files[0]);
-                    }
-                }, false);
-                
-                // Browse files button
-                document.getElementById('browseBtn').addEventListener('click', () => {
-                    // Create a file input
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.style.display = 'none';
-                    
-                    fileInput.addEventListener('change', (e) => {
-                        if (e.target.files.length) {
-                            handleFileSelection(e.target.files[0]);
-                        }
-                    });
-                    
-                    document.body.appendChild(fileInput);
-                    fileInput.click();
-                    document.body.removeChild(fileInput);
-                });
-                
-                // Handle file selection
-                function handleFileSelection(file) {
-                    if (!currentUser) {
-                        showNotification('Please log in to upload files', false);
-                        return;
-                    }
-                    
-                    currentFile = file;
-                    
-                    // Update preview
-                    document.getElementById('previewFileName').textContent = file.name;
-                    document.getElementById('previewFileSize').textContent = formatFileSize(file.size);
-                    
-                    // Show preview and hide drop area
-                    document.getElementById('dropArea').classList.add('hidden');
-                    document.getElementById('filePreview').classList.remove('hidden');
-                }
-                
-                // Cancel upload
-                document.getElementById('cancelUpload').addEventListener('click', () => {
-                    document.getElementById('filePreview').classList.add('hidden');
-                    document.getElementById('dropArea').classList.remove('hidden');
-                    document.getElementById('uploadProgress').style.width = '0%';
-                    currentFile = null;
-                });
-                
-                // Confirm upload
-                document.getElementById('confirmUpload').addEventListener('click', () => {
-                    if (!currentUser) {
-                        showNotification('Please log in to upload files', false);
-                        return;
-                    }
-                    
-                    if (currentFile) {
-                        uploadFile(currentFile, selectedExpirationDays);
-                    }
-                });
-                
-                // Download file
-                document.getElementById('downloadBtn').addEventListener('click', () => {
-                    const fileId = document.getElementById('fileIdInput').value.trim();
-                    if (!fileId) {
-                        showNotification('Please enter a file ID', false);
-                        return;
-                    }
-                    
-                    downloadFile(fileId);
-                });
-                
-                // Check file info
-                document.getElementById('checkFileBtn').addEventListener('click', async () => {
-                    const fileId = document.getElementById('checkFileId').value.trim();
-                    if (!fileId) {
-                        showNotification('Please enter a file ID', false);
-                        return;
-                    }
-                    
-                    try {
-                        const { data: files, error } = await supabase
-                            .from('files')
-                            .select('*')
-                            .eq('file_id', fileId);
-                        
-                        const fileInfoCard = document.getElementById('fileInfoCard');
-                        
-                        if (error || !files || files.length === 0) {
-                            showNotification('File not found', false);
-                            fileInfoCard.classList.add('hidden');
-                            return;
-                        }
-                        
-                        const file = files[0];
-                        
-                        // Update file info
-                        document.getElementById('infoFileName').textContent = file.file_name;
-                        document.getElementById('infoFileId').textContent = file.file_id;
-                        document.getElementById('infoFileSize').textContent = formatFileSize(file.file_size);
-                        document.getElementById('infoUploadDate').textContent = formatDate(file.created_at);
-                        
-                        if (file.expires_at) {
-                            const status = getExpirationStatus(file.expires_at);
-                            document.getElementById('infoExpiryDate').textContent = formatDate(file.expires_at);
-                            document.getElementById('infoFileStatus').textContent = status.text;
-                            document.getElementById('infoFileStatus').className = `status ${status.class}`;
-                        } else {
-                            document.getElementById('infoExpiryDate').textContent = "Never";
-                            document.getElementById('infoFileStatus').textContent = "Active";
-                            document.getElementById('infoFileStatus').className = "status active";
-                        }
-                        
-                        // Show file info card
-                        fileInfoCard.classList.remove('hidden');
-                    } catch (error) {
-                        showNotification('Error fetching file info: ' + error.message, false);
-                    }
-                });
-            }
             });
+            
+            // History tabs
+            document.querySelectorAll('.history-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.history-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+                    currentHistoryType = tab.getAttribute('data-history-type');
+                    renderFileHistory(currentHistoryType);
+                });
+            });
+            
+            // Login/Signup buttons
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                openModal('loginModal');
+            });
+            
+            document.getElementById('signupBtn').addEventListener('click', () => {
+                openModal('signupModal');
+            });
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                const { error } = await supabase.auth.signOut();
+                if (!error) {
+                    currentUser = null;
+                    document.getElementById('logoutBtn').classList.add('hidden');
+                    document.getElementById('loginBtn').classList.remove('hidden');
+                    document.getElementById('signupBtn').classList.remove('hidden');
+                    document.getElementById('userAvatar').textContent = 'GU';
+                    showNotification('You have been logged out');
+                }
+            });
+            
+            // Login submit
+            document.getElementById('loginSubmit').addEventListener('click', async () => {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                if (!email || !password) {
+                    showNotification('Please fill in all fields', false);
+                    return;
+                }
+                
+                try {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    setCurrentUser(data.user);
+                    closeAllModals();
+                    showNotification('Login successful!');
+                } catch (error) {
+                    showNotification('Login failed: ' + error.message, false);
+                }
+            });
+            
+            // Signup submit
+            document.getElementById('signupSubmit').addEventListener('click', async () => {
+                const name = document.getElementById('signupName').value.trim();
+                const email = document.getElementById('signupEmail').value.trim();
+                const password = document.getElementById('signupPassword').value;
+                const confirm = document.getElementById('signupConfirm').value;
+                
+                if (!name || !email || !password || !confirm) {
+                    showNotification('Please fill in all fields', false);
+                    return;
+                }
+                
+                if (password !== confirm) {
+                    showNotification('Passwords do not match', false);
+                    return;
+                }
+                
+                try {
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                full_name: name
+                            }
+                        }
+                    });
+                    
+                    if (error) throw error;
+                    
+                    // Create user profile
+                    await supabase
+                        .from('profiles')
+                        .insert([{
+                            id: data.user.id,
+                            email: email,
+                            full_name: name
+                        }]);
+                    
+                    setCurrentUser(data.user);
+                    closeAllModals();
+                    showNotification('Account created successfully! Please check your email to confirm your account.');
+                } catch (error) {
+                    showNotification('Signup failed: ' + error.message, false);
+                }
+            });
+            
+            // Close modals
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', () => {
+                    closeAllModals();
+                });
+            });
+            
+            // Switch between login and signup modals
+            document.getElementById('goToSignup').addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal('loginModal');
+                openModal('signupModal');
+            });
+            
+            document.getElementById('goToLogin').addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal('signupModal');
+                openModal('loginModal');
+            });
+            
+            // Close modal when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeAllModals();
+                    }
+                });
+            });
+            
+            // Expiration options
+            document.querySelectorAll('.expiration-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.expiration-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                    selectedExpirationDays = parseInt(option.getAttribute('data-days'));
+                });
+            });
+            
+            // Drag and drop area
+            const dropArea = document.getElementById('dropArea');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.classList.add('drag-over');
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.classList.remove('drag-over');
+                }, false);
+            });
+            
+            dropArea.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length) {
+                    handleFileSelection(files[0]);
+                }
+            }, false);
+            
+            // Browse files button
+            document.getElementById('browseBtn').addEventListener('click', () => {
+                // Create a file input
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.style.display = 'none';
+                
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) {
+                        handleFileSelection(e.target.files[0]);
+                    }
+                });
+                
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                document.body.removeChild(fileInput);
+            });
+            
+            // Handle file selection
+            function handleFileSelection(file) {
+                if (!currentUser) {
+                    showNotification('Please log in to upload files', false);
+                    return;
+                }
+                
+                currentFile = file;
+                
+                // Update preview
+                document.getElementById('previewFileName').textContent = file.name;
+                document.getElementById('previewFileSize').textContent = formatFileSize(file.size);
+                
+                // Show preview and hide drop area
+                document.getElementById('dropArea').classList.add('hidden');
+                document.getElementById('filePreview').classList.remove('hidden');
+            }
+            
+            // Cancel upload
+            document.getElementById('cancelUpload').addEventListener('click', () => {
+                document.getElementById('filePreview').classList.add('hidden');
+                document.getElementById('dropArea').classList.remove('hidden');
+                document.getElementById('uploadProgress').style.width = '0%';
+                currentFile = null;
+            });
+            
+            // Confirm upload
+            document.getElementById('confirmUpload').addEventListener('click', () => {
+                if (!currentUser) {
+                    showNotification('Please log in to upload files', false);
+                    return;
+                }
+                
+                if (currentFile) {
+                    uploadFile(currentFile, selectedExpirationDays);
+                }
+            });
+            
+            // Download file
+            document.getElementById('downloadBtn').addEventListener('click', () => {
+                const fileId = document.getElementById('fileIdInput').value.trim();
+                if (!fileId) {
+                    showNotification('Please enter a file ID', false);
+                    return;
+                }
+                
+                downloadFile(fileId);
+            });
+            
+            // Check file info
+            document.getElementById('checkFileBtn').addEventListener('click', async () => {
+                const fileId = document.getElementById('checkFileId').value.trim();
+                if (!fileId) {
+                    showNotification('Please enter a file ID', false);
+                    return;
+                }
+                
+                try {
+                    const { data: files, error } = await supabase
+                        .from('files')
+                        .select('*')
+                        .eq('file_id', fileId);
+                    
+                    const fileInfoCard = document.getElementById('fileInfoCard');
+                    
+                    if (error || !files || files.length === 0) {
+                        showNotification('File not found', false);
+                        fileInfoCard.classList.add('hidden');
+                        return;
+                    }
+                    
+                    const file = files[0];
+                    
+                    // Update file info
+                    document.getElementById('infoFileName').textContent = file.file_name;
+                    document.getElementById('infoFileId').textContent = file.file_id;
+                    document.getElementById('infoFileSize').textContent = formatFileSize(file.file_size);
+                    document.getElementById('infoUploadDate').textContent = formatDate(file.created_at);
+                    
+                    if (file.expires_at) {
+                        const status = getExpirationStatus(file.expires_at);
+                        document.getElementById('infoExpiryDate').textContent = formatDate(file.expires_at);
+                        document.getElementById('infoFileStatus').textContent = status.text;
+                        document.getElementById('infoFileStatus').className = `status ${status.class}`;
+                    } else {
+                        document.getElementById('infoExpiryDate').textContent = "Never";
+                        document.getElementById('infoFileStatus').textContent = "Active";
+                        document.getElementById('infoFileStatus').className = "status active";
+                    }
+                    
+                    // Show file info card
+                    fileInfoCard.classList.remove('hidden');
+                } catch (error) {
+                    showNotification('Error fetching file info: ' + error.message, false);
+                }
+            });
+        }
+
+        // Start the application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up all event listeners first
+            setupEventListeners();
+            
+            // Then initialize the application
+            initApp();
+        });
     </script>
 </body>
 </html>
