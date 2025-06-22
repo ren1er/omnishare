@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniShare</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .logo::before {
+            content: "☁️";
+            font-size: 1.5rem;
+        }
+
+        .login-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #5048e5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 4rem 2rem;
+            text-align: center;
+            background: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #6366f1;
+            background: #f8faff;
+        }
+
+        .upload-area.drag-over {
+            border-color: #6366f1;
+            background: #f0f4ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #6366f1;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .browse-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .browse-btn:hover {
+            background: #5048e5;
+        }
+
+        .download-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-section h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .check-btn {
+            width: 100%;
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .check-btn:hover {
+            background: #5048e5;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .modal-btn {
+            width: 100%;
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .modal-btn:hover {
+            background: #5048e5;
+        }
+
+        .modal-link {
+            text-align: center;
+            color: #6366f1;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .modal-link:hover {
+            text-decoration: underline;
+        }
+
+        .history-list {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .history-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .history-type {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #f3f4f6;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            margin-left: 1rem;
+        }
+
+        .upload-type {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .download-type {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .file-list {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-icon {
+            width: 24px;
+            height: 24px;
+            background: #6366f1;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        .share-link {
+            font-family: monospace;
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .copy-btn {
+            background: #e5e7eb;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: #d1d5db;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            border-top: 1px solid #e9ecef;
+            margin-top: 4rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info.active {
+            display: flex;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #6366f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">OmniShare</div>
+        <div id="loginSection">
+            <button class="login-btn" onclick="openModal('loginModal')">Login</button>
+        </div>
+        <div id="userSection" class="user-info">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userName">User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('upload')">Upload</button>
+            <button class="tab" onclick="switchTab('download')">Download</button>
+            <button class="tab" onclick="switchTab('history')">History</button>
+        </div>
+
+        <div id="uploadTab" class="tab-content active">
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">⬆️</div>
+                <div class="upload-text">Drag & Drop Files Here</div>
+                <div class="upload-subtext">or</div>
+                <button class="browse-btn">Browse Files</button>
+                <div class="upload-subtext">Supports all common file formats</div>
+                <input type="file" id="fileInput" multiple hidden>
+            </div>
+            <div id="fileList" class="file-list" style="display: none;"></div>
+        </div>
+
+        <div id="downloadTab" class="tab-content">
+            <div class="download-section">
+                <h2>Download Files</h2>
+                <div class="form-group">
+                    <label class="form-label">File Link or ID</label>
+                    <input type="text" class="form-input" id="downloadInput" placeholder="Paste file link or ID here">
+                </div>
+                <button class="check-btn" onclick="checkFile()">🔽 Check File</button>
+            </div>
+        </div>
+
+        <div id="historyTab" class="tab-content">
+            <div class="history-list">
+                <h2>File History</h2>
+                <div id="historyContent">
+                    <p style="text-align: center; color: #6b7280; padding: 2rem;">No history available. Upload or download files to see history.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <h2>Login to OmniShare</h2>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="modal-btn">Login</button>
+            </form>
+            <div style="text-align: center;">
+                <span style="color: #6b7280;">Don't have an account? </span>
+                <a href="#" class="modal-link" onclick="switchModal('loginModal', 'signupModal')">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal-overlay">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('signupModal')">&times;</button>
+            <h2>Sign up for OmniShare</h2>
+            <form onsubmit="signup(event)">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="signupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="signupPassword" placeholder="Create a password" required>
+                </div>
+                <button type="submit" class="modal-btn">Sign Up</button>
+            </form>
+            <div style="text-align: center;">
+                <span style="color: #6b7280;">Already have an account? </span>
+                <a href="#" class="modal-link" onclick="switchModal('signupModal', 'loginModal')">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <footer class="footer">
+        <div class="logo" style="justify-content: center; margin-bottom: 0.5rem;">OmniShare</div>
+        <div>© 2025 OmniShare. All rights reserved.</div>
+    </footer>
+
+    <script>
+        // Global state
+        let currentUser = null;
+        let uploadedFiles = [];
+        let downloadHistory = [];
+        let fileHistory = [];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadHistory();
+            setupDragAndDrop();
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function switchModal(fromModal, toModal) {
+            closeModal(fromModal);
+            openModal(toModal);
+        }
+
+        // Authentication functions
+        function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Simulate login (in real app, this would be an API call)
+            if (email && password) {
+                currentUser = {
+                    name: email.split('@')[0],
+                    email: email,
+                    avatar: email.charAt(0).toUpperCase()
+                };
+                
+                updateUIForLoggedInUser();
+                closeModal('loginModal');
+                showNotification('Login successful!');
+                saveUserData();
+            }
+        }
+
+        function signup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            // Simulate signup (in real app, this would be an API call)
+            if (name && email && password) {
+                currentUser = {
+                    name: name,
+                    email: email,
+                    avatar: name.charAt(0).toUpperCase()
+                };
+                
+                updateUIForLoggedInUser();
+                closeModal('signupModal');
+                showNotification('Account created successfully!');
+                saveUserData();
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            updateUIForLoggedOutUser();
+            showNotification('Logged out successfully!');
+            clearUserData();
+        }
+
+        function updateUIForLoggedInUser() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userSection').classList.add('active');
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userAvatar').textContent = currentUser.avatar;
+        }
+
+        function updateUIForLoggedOutUser() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userSection').classList.remove('active');
+        }
+
+        // File upload functions
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files);
+                handleFiles(files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                handleFiles(files);
+            });
+        }
+
+        function handleFiles(files) {
+            if (!currentUser) {
+                openModal('loginModal');
+                showNotification('Please login to upload files.', 'warning');
+                return;
+            }
+
+            const fileList = document.getElementById('fileList');
+            fileList.style.display = 'block';
+            fileList.innerHTML = '<h3>Selected Files:</h3>';
+
+            files.forEach((file, index) => {
+                const fileId = generateFileId();
+                const shareLink = `https://omnishare.com/f/${fileId}`;
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-icon">${getFileIcon(file.type)}</div>
+                        <div>
+                            <div class="history-name">${file.name}</div>
+                            <div class="history-details">${formatFileSize(file.size)} • ${file.type || 'Unknown'}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="share-link">${shareLink}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${shareLink}')">Copy</button>
+                    </div>
+                `;
+                fileList.appendChild(fileItem);
+
+                // Add to upload history
+                const uploadRecord = {
+                    id: fileId,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    uploadDate: new Date().toLocaleDateString(),
+                    shareLink: shareLink,
+                    action: 'upload'
+                };
+                
+                uploadedFiles.push(uploadRecord);
+                fileHistory.push(uploadRecord);
+            });
+
+            saveHistory();
+            showNotification(`${files.length} file(s) uploaded successfully!`);
+        }
+
+        // Download functions
+        function checkFile() {
+            const input = document.getElementById('downloadInput');
+            const linkOrId = input.value.trim();
+            
+            if (!linkOrId) {
+                showNotification('Please enter a file link or ID.', 'warning');
+                return;
+            }
+
+            // Simulate file check (in real app, this would be an API call)
+            const fileName = 'sample-document.pdf';
+            const fileSize = '2.5 MB';
+            
+            // Add to download history
+            const downloadRecord = {
+                id: generateFileId(),
+                name: fileName,
+                size: fileSize,
+                downloadDate: new Date().toLocaleDateString(),
+                sourceLink: linkOrId,
+                action: 'download'
+            };
+            
+            downloadHistory.push(downloadRecord);
+            fileHistory.push(downloadRecord);
+            saveHistory();
+            
+            showNotification('File downloaded successfully!');
+            input.value = '';
+        }
+
+        // History functions
+        function loadHistory() {
+            const savedHistory = JSON.parse(localStorage.getItem('omniShareHistory') || '[]');
+            fileHistory = savedHistory;
+            updateHistoryDisplay();
+        }
+
+        function saveHistory() {
+            localStorage.setItem('omniShareHistory', JSON.stringify(fileHistory));
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const historyContent = document.getElementById('historyContent');
+            
+            if (fileHistory.length === 0) {
+                historyContent.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No history available. Upload or download files to see history.</p>';
+                return;
+            }
+
+            historyContent.innerHTML = '';
+            
+            // Sort history by date (newest first)
+            const sortedHistory = [...fileHistory].reverse();
+            
+            sortedHistory.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                const date = item.uploadDate || item.downloadDate;
+                const typeClass = item.action === 'upload' ? 'upload-type' : 'download-type';
+                const actionText = item.action === 'upload' ? 'Uploaded' : 'Downloaded';
+                const icon = item.action === 'upload' ? '⬆️' : '⬇️';
+                
+                historyItem.innerHTML = `
+                    <div class="history-info">
+                        <div class="history-name">${icon} ${item.name}</div>
+                        <div class="history-details">${actionText} on ${date} • ${item.size || 'Unknown size'}</div>
+                    </div>
+                    <span class="history-type ${typeClass}">${item.action.toUpperCase()}</span>
+                `;
+                
+                historyContent.appendChild(historyItem);
+            });
+        }
+
+        // Utility functions
+        function generateFileId() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function getFileIcon(type) {
+            if (type.startsWith('image/')) return '🖼️';
+            if (type.startsWith('video/')) return '🎥';
+            if (type.startsWith('audio/')) return '🎵';
+            if (type.includes('pdf')) return '📄';
+            if (type.includes('text')) return '📝';
+            if (type.includes('zip') || type.includes('rar')) return '📦';
+            return '📄';
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Link copied to clipboard!');
+            }).catch(() => {
+                showNotification('Failed to copy link.', 'error');
+            });
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification show';
+            
+            if (type === 'warning') {
+                notification.style.background = '#f59e0b';
+            } else if (type === 'error') {
+                notification.style.background = '#ef4444';
+            } else {
+                notification.style.background = '#10b981';
+            }
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Local storage functions
+        function saveUserData() {
+            if (currentUser) {
+                localStorage.setItem('omniShareUser', JSON.stringify(currentUser));
+            }
+        }
+
+        function loadUserData() {
+            const savedUser = localStorage.getItem('omniShareUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUIForLoggedInUser();
+            }
+        }
+
+        function clearUserData() {
+            localStorage.removeItem('omniShareUser');
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
