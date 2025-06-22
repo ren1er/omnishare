@@ -993,18 +993,12 @@
     </div>
 
     <script>
-        let currentFile = null;
-        let selectedExpirationDays = 7;
-        let currentHistoryType = 'uploaded';
-        let currentUser = null;
-
-        document.addEventListener('DOMContentLoaded', async () => {
-        // Add your Supabase credentials here
-            const SUPABASE_URL = 'https://iwxqdyyevgzgsrkxbcrb.supabase.co';
-            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eHFkeXlldmd6Z3Nya3hiY3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTE1NjQsImV4cCI6MjA2NjE2NzU2NH0.4FwS5IvD92L2mvCbRu1TJoZBIOsRkft5UaKCJLncD-8';
-            
-            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            
+        // Supabase initialization
+        const SUPABASE_URL = 'https://iwxqdyyevgzgsrkxbcrb.supabase.co';
+        const SUPABASE_KEY = 'your-anon-keyeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eHFkeXlldmd6Z3Nya3hiY3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTE1NjQsImV4cCI6MjA2NjE2NzU2NH0.4FwS5IvD92L2mvCbRu1TJoZBIOsRkft5UaKCJLncD-8';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
         // Format file size
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -1067,26 +1061,30 @@
         // Update stats
         async function updateStats() {
             if (currentUser) {
-                // Get user upload count
-                const { count: uploadCount } = await supabase
-                    .from('files')
-                    .select('*', { count: 'exact' })
-                    .eq('user_id', currentUser.id);
-                
-                // Get user download count
-                const { count: downloadCount } = await supabase
-                    .from('downloads')
-                    .select('*', { count: 'exact' })
-                    .eq('user_id', currentUser.id);
-                
-                // Get total user count
-                const { count: userCount } = await supabase
-                    .from('profiles')
-                    .select('*', { count: 'exact' });
-                
-                document.getElementById('uploadCount').textContent = uploadCount;
-                document.getElementById('downloadCount').textContent = downloadCount;
-                document.getElementById('userCount').textContent = userCount;
+                try {
+                    // Get user upload count
+                    const { count: uploadCount, error: uploadError } = await supabase
+                        .from('files')
+                        .select('*', { count: 'exact' })
+                        .eq('user_id', currentUser.id);
+                    
+                    // Get user download count
+                    const { count: downloadCount, error: downloadError } = await supabase
+                        .from('downloads')
+                        .select('*', { count: 'exact' })
+                        .eq('user_id', currentUser.id);
+                    
+                    // Get total user count
+                    const { count: userCount, error: userError } = await supabase
+                        .from('profiles')
+                        .select('*', { count: 'exact' });
+                    
+                    document.getElementById('uploadCount').textContent = uploadCount || 0;
+                    document.getElementById('downloadCount').textContent = downloadCount || 0;
+                    document.getElementById('userCount').textContent = userCount || 0;
+                } catch (error) {
+                    console.error("Error updating stats:", error);
+                }
             }
         }
         
@@ -1108,7 +1106,7 @@
             updateStats();
             
             // Update history if we're on that view
-            if (document.getElementById('historyView').classList.contains('hidden') === false) {
+            if (!document.getElementById('historyView').classList.contains('hidden')) {
                 renderFileHistory(currentHistoryType);
             }
         }
@@ -1128,7 +1126,10 @@
                 link.classList.remove('active');
             });
             
-            document.querySelector(`nav a[data-view="${viewId}"]`).closest('a').classList.add('active');
+            const activeLink = document.querySelector(`nav a[data-view="${viewId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
             
             // If history view, render it
             if (viewId === 'historyView') {
@@ -1273,7 +1274,7 @@
                     </div>
                     <div class="file-meta">
                         <div>Size: ${formatFileSize(file.file_size)}</div>
-                        <div>Date: ${formatDate(type === 'uploaded' ? file.created_at : file.downloaded_at)}</div>
+                        <div>Date: ${formatDate(file.created_at)}</div>
                         ${expirationInfo}
                     </div>
                     ${expirationBadge}
@@ -1328,16 +1329,14 @@
         // Upload file to Supabase
         async function uploadFile(file, expirationDays) {
             const progressBar = document.getElementById('uploadProgress');
-            let progress = 0;
             
-            // Generate file ID
-            const fileId = generateFileId();
-            
-            // Calculate expiration date
-            const expiresAt = expirationDays > 0 ? calculateExpirationDate(expirationDays) : null;
-            
-            // Upload file to storage
             try {
+                // Generate file ID
+                const fileId = generateFileId();
+                
+                // Calculate expiration date
+                const expiresAt = expirationDays > 0 ? calculateExpirationDate(expirationDays) : null;
+                
                 // First upload metadata to database
                 const { data, error } = await supabase
                     .from('files')
@@ -1361,7 +1360,7 @@
                 
                 // Update stats and history
                 updateStats();
-                if (document.getElementById('historyView').classList.contains('hidden') === false) {
+                if (!document.getElementById('historyView').classList.contains('hidden')) {
                     renderFileHistory(currentHistoryType);
                 }
                 
@@ -1415,11 +1414,6 @@
                 // For demo, we'll just show a notification
                 showNotification(`Download started for: ${file.file_name}`);
                 
-                // In a real app, you would serve the file from storage
-                // const { data, error: downloadError } = await supabase.storage
-                //   .from('files')
-                //   .download(file.file_path);
-                
             } catch (error) {
                 showNotification('Download failed: ' + error.message, false);
             }
@@ -1457,8 +1451,12 @@
             }
             
             // Check if user is already logged in
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) setCurrentUser(user);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) setCurrentUser(user);
+            } catch (error) {
+                console.error("Error getting user:", error);
+            }
             
             // Navigation
             document.querySelectorAll('nav a').forEach(link => {
@@ -1492,14 +1490,18 @@
             
             // Logout button
             document.getElementById('logoutBtn').addEventListener('click', async () => {
-                const { error } = await supabase.auth.signOut();
-                if (!error) {
-                    currentUser = null;
-                    document.getElementById('logoutBtn').classList.add('hidden');
-                    document.getElementById('loginBtn').classList.remove('hidden');
-                    document.getElementById('signupBtn').classList.remove('hidden');
-                    document.getElementById('userAvatar').textContent = 'GU';
-                    showNotification('You have been logged out');
+                try {
+                    const { error } = await supabase.auth.signOut();
+                    if (!error) {
+                        currentUser = null;
+                        document.getElementById('logoutBtn').classList.add('hidden');
+                        document.getElementById('loginBtn').classList.remove('hidden');
+                        document.getElementById('signupBtn').classList.remove('hidden');
+                        document.getElementById('userAvatar').textContent = 'GU';
+                        showNotification('You have been logged out');
+                    }
+                } catch (error) {
+                    showNotification('Logout failed: ' + error.message, false);
                 }
             });
             
@@ -1764,7 +1766,8 @@
                 }
             });
         });
-        });
     </script>
+</body>
+</html>
 </body>
 </html>
